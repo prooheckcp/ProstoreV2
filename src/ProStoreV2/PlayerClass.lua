@@ -8,15 +8,12 @@ playerInstance.data = nil --current player data
 
 function playerInstance.new(player)
 
+    local newData = setmetatable({}, playerInstance) 
     
-end
+    newData.player = player
 
-function playerInstance:Get()
-    
-end
+    return newData
 
-function playerInstance:Set()
-    
 end
 
 return playerInstance

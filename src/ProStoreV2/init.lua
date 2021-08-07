@@ -154,6 +154,14 @@ local function playerJoined(player)
 
     Player.data = getUserData(player.UserId)
 
+    function Player:Get(dataName)
+        return GetData(self.player, dataName)
+    end
+
+    function Player:Set(dataName, newValue)
+        return SetData(self.player, dataName, newValue)
+    end
+
     --Get the player into the socket
     table.insert(playersSocket, Player)
 
@@ -171,7 +179,7 @@ end
 
 --Exposed methods
 
---Returns the player in the socket
+--Returns information about this user in the socket: used to help other functions
 function GetPlayer(player)
     
     if typeof(player) == "Instance" and player.Parent == Players then
@@ -190,9 +198,44 @@ function GetPlayer(player)
 
 end
 
+--[[
+    Returns the user instance from the socket
+]]
+function GetUser(player)
+    
+    for _, instance in pairs(playersSocket) do
+        if instance.player.UserId == player.UserId then
+            return instance
+        end
+    end
+
+    return warn("Could not find user!")
+
+end
+
 function GetData(player, dataName)
     
-    local index, data = GetPlayer(player)
+    local index, data, instance = GetPlayer(player)
+    local indexsValues = string.split(dataName, ".")
+
+    --There was no error processing this
+    if index ~= nil then
+
+        local currentIteration = 1
+        for indexName, value in pairs(data) do
+
+            if indexName == indexsValues[currentIteration] then
+
+                if currentIteration == #indexsValues then
+                    return value
+                else
+                    --Do recursive here after
+                end
+
+            end
+        end
+
+    end
 
 end
 
@@ -227,7 +270,7 @@ Players.PlayerRemoving:Connect(playerLeft)
 --------||
 
 return {
-    GetPlayer = GetPlayer,
+    GetUser = GetUser,
     Get = GetData,
     Set = SetData,
     ForcedSave = ForcedSave,
