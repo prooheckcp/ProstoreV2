@@ -12,11 +12,15 @@ local function playerJoined(player, playerData)
     print(player.Name.." just joined.")
     print(playerData)
 
-    wait(5)
+    wait(1)
 
-    local playerCoins = ProStore2.Get(player, "Coins")
+    local playerInstance = ProStore2.Set(player, "Coins", 25)
 
-    print("Coins: "..playerCoins)
+    local playerDetail = ProStore2.Get(player, "Coins")
+
+    if playerDetail ~= nil then
+        print(playerDetail)
+    end
 
 end
 ---------||

@@ -31,13 +31,36 @@ local playersSocket = {} --Store currently online players
 
 --Methods||
 local function wrongTypeException(expected, got)
-    warn("Error: expected \""..expected.."\" got \""..typeof(got).."\" instead!")
+
+    local error = "Error: expected \""..expected.."\" got \""..typeof(got).."\" instead!"
+    warn(error)
+    return error
+
 end
 
 local function notification(message)
+
     if Settings.actionsFeedback then
         warn(message)
     end
+
+end
+
+local function createEvent(key)
+
+    local module = {}
+    
+    function module:Connect(method)
+        
+        if typeof(method) ~= "function" then
+            return error(wrongTypeException("function", method))
+        end
+
+        table.insert(storedEvents[key], method)
+    end
+
+    return module
+
 end
 
 --[[
@@ -213,28 +236,49 @@ function GetUser(player)
 
 end
 
+--[[
+    A simple method to get the nested value of a table
+]]
+function recursiveSearch(indexesTable, table, startValue)
+
+    local currentIteration = startValue or 1
+
+    local currentIndex = indexesTable[currentIteration]
+
+    for indexName, value in pairs(table) do
+
+        if indexName == currentIndex then
+
+            if currentIteration == #indexesTable then
+                return value
+            else
+
+                if typeof(value) == "table" then
+                    return recursiveSearch(indexesTable, value, currentIteration + 1)
+                else
+                   return warn(indexesTable[currentIteration + 1].." cannot be searched for in "..typeof(value)) 
+                end
+            end
+
+        end
+    end
+
+    if currentIteration > 1 then
+        return warn(currentIndex.." is not part of "..indexesTable[currentIteration - 1])
+    else
+       return warn(currentIndex.." is not part of the players data!") 
+    end
+
+end
+
 function GetData(player, dataName)
     
-    local index, data, instance = GetPlayer(player)
+    local index, data = GetPlayer(player)
     local indexsValues = string.split(dataName, ".")
 
     --There was no error processing this
     if index ~= nil then
-
-        local currentIteration = 1
-        for indexName, value in pairs(data) do
-
-            if indexName == indexsValues[currentIteration] then
-
-                if currentIteration == #indexsValues then
-                    return value
-                else
-                    --Do recursive here after
-                end
-
-            end
-        end
-
+        return recursiveSearch(indexsValues, data)
     end
 
 end
@@ -242,7 +286,14 @@ end
 function SetData(player, dataName, newValue)
 
     local index, data = GetPlayer(player)
-    
+    local indexsValues = string.split(dataName, ".")
+
+    if #indexsValues > 1 then
+        --Search here
+    else
+        playersSocket[index].data[dataName] = newValue
+    end
+
 end
 
 function GetOfflineData(userID)
@@ -253,20 +304,21 @@ function ForcedSave(player)
     saveUser(player)
 end
 
-function PlayerAdded()
-
-    local module = {}
-    
-    function module:Connect(method)
-        table.insert(storedEvents[PLAYERS_JOINED], method)
+--[[
+    In case the server closes either cause a dev turned off or due to a random crash
+    make the game save the players data 
+]]
+local function serverClosed()
+    for _, user in pairs(playersSocket) do
+        saveUser(user)
     end
-
 end
 ---------||
 
 --Events||
 Players.PlayerAdded:Connect(playerJoined)
 Players.PlayerRemoving:Connect(playerLeft)
+game:BindToClose(serverClosed)
 --------||
 
 return {
@@ -275,5 +327,5 @@ return {
     Set = SetData,
     ForcedSave = ForcedSave,
     GetOfflineUser = GetOfflineData,
-    PlayerAdded = PlayerAdded
+    PlayerAdded = createEvent(PLAYERS_JOINED)
 }

@@ -17,7 +17,7 @@ return {
 		["Inventory"] = {},
 		["stats"] = {
 			["health"] = 0,
-			["strength"] = 0,
+			["strength"] = 3,
 			["power"] = 0,
 			["newvar2"] = 0,
 			["someTable"] = {
