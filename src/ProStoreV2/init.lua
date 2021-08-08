@@ -406,6 +406,7 @@ function SetData(player, dataName, newValue)
         return instance
     else
         playersSocket[index].data[dataName] = newValue
+        return instance
     end
 
 end

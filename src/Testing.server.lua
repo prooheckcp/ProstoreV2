@@ -1,5 +1,6 @@
 --[[
     This script is being used just to show how to use the module by testing random methods
+    it's super messy so do not take it as an example
 ]]
 
 --Services||
@@ -11,6 +12,21 @@ local ProStore2 = require(ServerScriptService.ProStoreV2)
 --------------||
 
 --Methods||
+local function addCoins(player, amount)
+    local currentCoins = ProStore2.Get(player, "Coins")
+    local newCurrency = currentCoins + amount
+    local playerInstance = ProStore2.Set(player, "Coins", newCurrency)
+
+    print(newCurrency)
+
+    local newCoins = playerInstance:Get("Coins")
+
+   
+
+    player:SetAttribute("coins", newCoins)
+
+end
+
 local function playerJoined(player, playerData)
     
     print(player.Name.." just joined.")
@@ -18,21 +34,13 @@ local function playerJoined(player, playerData)
 
     wait(1)
 
-    --Example on how to set a variable
-    local playerDetail = ProStore2.Get(player, "stats.health")
-    local playerInstance = ProStore2.Set(player, "stats.health", 25)
-   -- local playerDetail = playerInstance:Get("stats.health")
+    addCoins(player, 100)
 
-    local Coins = ProStore2.GetUser(player):Get("Coins")
-    print("Coins: "..Coins)
-
-    if playerDetail ~= nil then
-        print(playerDetail)
-    end
 
 end
 ---------||
 
 --Events||
+game.ReplicatedStorage.coins.OnServerEvent:Connect(addCoins)
 ProStore2.PlayerAdded:Connect(playerJoined)
 --------||
