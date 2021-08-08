@@ -5,6 +5,7 @@
 --Services||
 local Players = game:GetService("Players")
 local DataStoreService = game:GetService("DataStoreService")
+local RunService = game:GetService("RunService")
 ----------||
 
 --Dependencies||
@@ -173,6 +174,12 @@ end
 ]]
 local function saveUser(player)
     
+    if RunService:IsStudio() and not Settings.saveOnStudio then
+        return
+    end
+
+    notification("Saving "..player.Name.."'s data!")
+
     local index, userData = GetPlayer(player)
 
     if index == nil then

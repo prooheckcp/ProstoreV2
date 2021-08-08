@@ -18,8 +18,10 @@ local function playerJoined(player, playerData)
 
     wait(1)
 
+    --Example on how to set a variable
+    local playerDetail = ProStore2.Get(player, "stats.health")
     local playerInstance = ProStore2.Set(player, "stats.health", 25)
-    local playerDetail = playerInstance:Get("stats.health")
+   -- local playerDetail = playerInstance:Get("stats.health")
 
     if playerDetail ~= nil then
         print(playerDetail)
