@@ -209,7 +209,7 @@ function GetPlayer(player)
 
         for index, instance in pairs(playersSocket) do
             if instance.player.UserId == player.UserId then
-                return index, instance.data --returns a tupple with both the index and the player instance
+                return index, instance.data, instance --returns a tupple with both the index and the player instance
             end
         end
 
@@ -285,11 +285,20 @@ end
 
 function SetData(player, dataName, newValue)
 
-    local index, data = GetPlayer(player)
+    local index, data, instance = GetPlayer(player)
     local indexsValues = string.split(dataName, ".")
+    local storeFinalIndex = indexsValues[#indexsValues]
 
     if #indexsValues > 1 then
+
+        --Do not use the last index in the search
+        table.remove(indexsValues, #indexsValues)
+
         --Search here
+        local outterTable = recursiveSearch(indexsValues, data)
+        outterTable[storeFinalIndex] = newValue
+
+        return instance
     else
         playersSocket[index].data[dataName] = newValue
     end
