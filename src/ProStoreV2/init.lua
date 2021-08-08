@@ -178,7 +178,7 @@ local function saveUser(player)
         return
     end
 
-    notification("Saving "..player.Name.."'s data!")
+    notification("Saving "..player.name.."'s data!")
 
     local index, userData = GetPlayer(player)
 
@@ -367,7 +367,7 @@ end
 ]]
 local function serverClosed()
     for _, user in pairs(playersSocket) do
-        saveUser(user)
+        saveUser(user.player)
     end
 end
 ---------||

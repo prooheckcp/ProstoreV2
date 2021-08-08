@@ -26,7 +26,7 @@ ProStore V2 is a remake of my previous library done around september 2020, it al
 
 ### Declaring ProStore V2
 
-This should the way you declare the module at the top of your script
+This should be the way you declare the module at the top of your script
 
 ```lua
 local ServerScriptService = game:GetService("ServerScriptService")
@@ -42,7 +42,7 @@ Example:
 ```lua
 
     --[[
-        Assuming the schema lookks like this:
+        Assuming the schema looks like this:
 
         schema = {
             Coins = 0,
