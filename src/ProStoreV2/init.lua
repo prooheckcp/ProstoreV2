@@ -15,6 +15,7 @@ local DeepCopy = require(script.DeepCopy)
 --------------||
 
 --Constants||
+local MINUTE_SCALE = 60 -- 60 seconds = 1 minute
 local DATA_KEY = "playerData_"
 
 --Events names
@@ -29,6 +30,13 @@ local storedEvents = {
 }
 local playersSocket = {} --Store currently online players
 -----------||
+
+--VALIDATION TO STOP ERRORS--
+--this part of the code checks if all the settings in the settings files are correct
+
+
+
+-----------------------------
 
 --Methods||
 local function wrongTypeException(expected, got)
@@ -225,6 +233,8 @@ local function playerJoined(player)
 
     Player.data = getUserData(player.UserId)
 
+    Player.saveTime = os.time()
+
     function Player:Get(dataName)
         return GetData(self.player, dataName)
     end
@@ -246,6 +256,28 @@ end
 local function playerLeft(player)
     saveUser(player)
     removeFromSocket(player)
+end
+
+local function autoSaveMethod()
+
+    local currentOS = os.time()
+    
+    for _, user in pairs(playersSocket) do
+        
+        local timeVariation = math.abs(currentOS - user.saveTime)
+
+        if timeVariation > (Settings.autoSave * MINUTE_SCALE) then
+            --Check if the user still exists
+            if user.player.Parent == Players then
+                user.saveTime = currentOS
+                saveUser(user.player)
+            else
+                removeFromSocket(user.player)
+            end
+        end
+
+    end
+
 end
 
 --Exposed methods
@@ -376,6 +408,12 @@ end
 Players.PlayerAdded:Connect(playerJoined)
 Players.PlayerRemoving:Connect(playerLeft)
 game:BindToClose(serverClosed)
+
+--Auto save
+if Settings.autoSave > 0 then
+    RunService.Heartbeat:Connect(autoSaveMethod)
+end
+
 --------||
 
 return {
