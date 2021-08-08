@@ -34,7 +34,25 @@ local playersSocket = {} --Store currently online players
 --VALIDATION TO STOP ERRORS--
 --this part of the code checks if all the settings in the settings files are correct
 
+if typeof(Settings.keycode) ~= "string" then
+    error("keycode in settings must be a string!")
+end
 
+if typeof(Settings.saveOnStudio) ~= "boolean" then
+    error("saveOnStudio in settings must be a boolean!")
+end
+
+if typeof(Settings.actionsFeedback) ~= "boolean" then
+    error("actionsFeedback in settings must be a boolean!")
+end
+
+if typeof(Settings.autoSave) ~= "number" then
+    error("autoSave in settings must be a number!")
+end
+
+if typeof(Settings.schema) ~= "table" or Settings.schema[1] ~= nil then
+    error("schema in settings must be a dictionary!")
+end
 
 -----------------------------
 
@@ -412,6 +430,8 @@ game:BindToClose(serverClosed)
 --Auto save
 if Settings.autoSave > 0 then
     RunService.Heartbeat:Connect(autoSaveMethod)
+else
+    notification("Autosave is disabled!")
 end
 
 --------||
