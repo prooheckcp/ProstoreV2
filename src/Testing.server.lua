@@ -23,6 +23,9 @@ local function playerJoined(player, playerData)
     local playerInstance = ProStore2.Set(player, "stats.health", 25)
    -- local playerDetail = playerInstance:Get("stats.health")
 
+    local Coins = ProStore2.GetUser(player):Get("Coins")
+    print("Coins: "..Coins)
+
     if playerDetail ~= nil then
         print(playerDetail)
     end

@@ -1,5 +1,12 @@
 --[[
-    This library was created at 08/07/2021 MM/DD/YYYY
+    This library was created at 08/07/2021 MM/DD/YYYY by Prooheckcp
+
+    Contact:
+    Discord: レム デベロッパー | prooheckcp#2001
+    Twitter: @prooheckcp
+
+    Prooheckcp is a portuguese game developer who's currently a full time game development student
+    and a part-time software engineer for a British company called Dubit.
 ]]
 
 --Services||
@@ -408,6 +415,13 @@ function GetOfflineData(userID)
 end
 
 function ForcedSave(player)
+
+    local user = GetUser(player)
+
+    if user ~= nil then
+        user.saveTime = os.time() --Reset save time to avoid auto saving too early
+    end
+
     saveUser(player)
 end
 
