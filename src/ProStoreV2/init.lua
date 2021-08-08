@@ -90,8 +90,9 @@ local function recursiveAssing(table, currentSchema)
                         recursiveAssing(playerValue, cleanValue)
                     end
                 else
+                    notification(indexName.." no longer has the same type!")
                     --This variables no longer share the same type!
-                    playerValue = cleanValue
+                    table[schemaName] = cleanValue
                 end
 
                 foundValue = true
