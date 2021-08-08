@@ -110,6 +110,36 @@ local function recursiveAssing(table, currentSchema)
 end
 
 --[[
+    Removes variables from the user data that are no longer being used
+]]
+local function recursiveClean(table, currentSchema)
+    
+    currentSchema = currentSchema or Settings.schema
+
+    for indexName, playerValue in pairs(table) do
+
+        local indexExists = false
+        for schemaName, defaultValue in pairs(currentSchema) do
+            if indexName == schemaName then
+                indexExists = true
+                break
+            end
+        end
+
+        if not indexExists then
+            table[indexName] = nil
+        else
+            --This index exists, check if u can search into it
+            if typeof(playerValue) == "table" then
+                recursiveClean(playerValue, currentSchema[indexName])
+            end
+        end
+
+    end
+
+end
+
+--[[
     Gets the data from a user given his player ID 
 ]]
 local function getUserData(userID)
@@ -123,7 +153,8 @@ local function getUserData(userID)
         if success and typeof(userData) == "table" then
 
             recursiveAssing(userData) --Fixes any variable that is wrongly assigned
-            
+            recursiveClean(userData) --Removes variables that are no longer part of the schema
+
             return userData
 
         else

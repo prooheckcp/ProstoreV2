@@ -17,17 +17,11 @@ return {
 		["Inventory"] = {},
 		["stats"] = {
 			["health"] = 0,
-            ["newVariable"] = true,
-			["strength"] = 3,
-			["power"] = 0,
-			["newvar2"] = 0,
-            ["added1"] = false,
 			["someTable"] = {
 				["cadeira"] = 12,
 				["evenMoreNested"] = {
 					["UwU"] = 3,
 					["OwO"] = 10,
-                    ["supperAdded"] = 2,
 				}
 			}
 		}
