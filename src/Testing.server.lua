@@ -1,3 +1,7 @@
+--[[
+    This script is being used just to show how to use the module by testing random methods
+]]
+
 --Services||
 local ServerScriptService = game:GetService("ServerScriptService")
 ----------||

@@ -64,6 +64,51 @@ local function createEvent(key)
 end
 
 --[[
+    Checks if the table is correctly corresponding to the one from the schema
+    If it isn't then it will it, in order to make this work with nested value I'll
+    be using a recursive method
+]]
+local function recursiveAssing(table, currentSchema)
+    
+    currentSchema = currentSchema or Settings.schema
+
+    for schemaName, defaultValue in pairs(currentSchema) do
+
+        --Makes sure tables are never references from the schema
+        local cleanValue = (typeof(defaultValue) == "table") and DeepCopy(defaultValue) or defaultValue
+
+        local foundValue = false
+
+        for indexName, playerValue in pairs(table) do
+            
+            if schemaName == indexName then
+
+                --Force variables to have the same type
+                if typeof(cleanValue) == typeof(playerValue) then    
+                    --Check if it is a table to apply recursive method
+                    if typeof(playerValue) == "table" then
+                        recursiveAssing(playerValue, cleanValue)
+                    end
+                else
+                    --This variables no longer share the same type!
+                    playerValue = cleanValue
+                end
+
+                foundValue = true
+            end
+
+        end
+
+        --The user still did not have this value
+        if not foundValue then
+            table[schemaName] = cleanValue 
+        end
+
+    end
+
+end
+
+--[[
     Gets the data from a user given his player ID 
 ]]
 local function getUserData(userID)
@@ -76,44 +121,8 @@ local function getUserData(userID)
 
         if success and typeof(userData) == "table" then
 
-            --User already had data
-            for schemaName, defaultValue in pairs(Settings.schema) do
-
-                local foundIndex = false
-
-                for indexName, playerValue in pairs(userData) do
-                    
-                    if schemaName == indexName then
-                        --The player already has this value, just check if the type is correct
-                        
-                        if not (typeof(defaultValue) == typeof(playerValue)) then
-
-                            notification("This user had a wrong variable type!")
-                            
-                            if typeof(defaultValue) == "table" then
-                                userData[schemaName] = DeepCopy(defaultValue)
-                            else
-                                userData[schemaName] = defaultValue
-                            end
-
-                        end
-
-                        foundIndex = true
-                        break
-                    end
-
-                end
-
-                if not foundIndex then
-                    if typeof(defaultValue) == "table" then
-                        userData[schemaName] = DeepCopy(defaultValue)
-                    else
-                        userData[schemaName] = defaultValue
-                    end
-                end
-
-            end
-
+            recursiveAssing(userData) --Fixes any variable that is wrongly assigned
+            
             return userData
 
         else
